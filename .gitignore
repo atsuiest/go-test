@@ -2,3 +2,4 @@ go.mod
 go.sum
 node_modules
 go-test-ws.code-workspace
+go-test.exe
