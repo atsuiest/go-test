@@ -16,9 +16,9 @@ spec:
         app: camp-ms-test-lbascur
     spec:
       containers:
-        - image: us.icr.io/bupa-infra/mesh:0.1.6
+        - image: bupacl/arquitectura-mesh:2.1.0
           imagePullPolicy: IfNotPresent
-          name: aeol-sidecar
+          name: ms-lbascur-mesh
           ports:
             - containerPort: 5001
               protocol: TCP
@@ -26,13 +26,14 @@ spec:
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
-            - mountPath: /go/bin/configurator.yaml
-              name: aeol-configmap
-              subPath: configurator.yaml
-        - env:
-            - name: CONFIG
+            - mountPath: /go/bin/configuration.yaml
+              mountPropagation: None
+              name: mesh-volume
+              subPath: configuration.yaml
+          env:
+            - name: STACKER_CONFIG
               value: /go/bin/configuration.yaml
-          name: camp-ms-test-lbascur
+        - name: camp-ms-test-lbascur
           image: atsuiest/go-test:1.0
           imagePullPolicy: IfNotPresent
           ports:
@@ -40,8 +41,8 @@ spec:
       volumes:
         - configMap:
             defaultMode: 420
-            name: cp-ms-alerts-qa-sidecar-configmap
-          name: aeol-configmap
+            name: ms-lbascur-mesh
+          name: mesh-volume
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
