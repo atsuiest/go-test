@@ -1,26 +1,47 @@
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: cp-web-qa
-  namespace: cp-qa
+  name: camp-ms-test-lbascur
+  namespace: camp-qa
   labels:
     environment: qa
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: cp-web-qa
+      app: camp-ms-test-lbascur
   template:
     metadata:
       labels:
-        app: cp-web-qa
+        app: camp-ms-test-lbascur
     spec:
       containers:
-        - name: cp-web-qa
-          image: registry.birchman.cl/bupa-containers-desarrollo/catalogo-web-container:1.29.25
+        - image: us.icr.io/bupa-infra/mesh:0.1.6
+          imagePullPolicy: IfNotPresent
+          name: aeol-sidecar
+          ports:
+            - containerPort: 5001
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - mountPath: /go/bin/configurator.yaml
+              name: aeol-configmap
+              subPath: configurator.yaml
+        - env:
+            - name: CONFIG
+              value: /go/bin/configuration.yaml
+          name: camp-ms-test-lbascur
+          image: atsuiest/go-test:1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
+      volumes:
+        - configMap:
+            defaultMode: 420
+            name: cp-ms-alerts-qa-sidecar-configmap
+          name: aeol-configmap
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -31,5 +52,5 @@ spec:
                     - key: app
                       operator: In
                       values:
-                        - cp-web-qa
+                        - camp-ms-test-lbascur
                 topologyKey: 'kubernetes.io/hostname'
