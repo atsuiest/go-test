@@ -1,0 +1,30 @@
+apiVersion: v1
+data:
+  configurator.yaml: |
+    serverport : "5001"
+    targetport : "8080"
+    middleware:
+        secure  : false
+        cache   : true
+        trace   : true
+        collect : false
+        proxy   : true
+        limitier: true
+        cors    : false
+    throteling:
+        maxlimit: 100
+    cacheconfig:
+        hostname : redis-cluster.bupa-infra-qa.svc.cluster.local:6379
+        database : 0
+        username : "admin"
+        password : "r3d1sbup4qa"
+        site     : "gw-key"
+    claim: oscar
+    encriptedPassword: "bupaEncr1pt3dpassword$"
+    tracingconfig:
+        zipkinendpoint: "http://zipkin-qa.bupa-infra-qa/api/v1/spans"
+        servicename: "cp-service"
+kind: ConfigMap
+metadata:
+  name: camp-ms-test-lbascur-qa-sidecar-configmap
+  namespace: camp-qa
